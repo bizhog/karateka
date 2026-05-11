@@ -12,66 +12,135 @@ var Renderer = (function() {
   }
 
   function drawBackground(cameraX) {
-    // Sky gradient
-    var grad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-    grad.addColorStop(0, '#1a0a2e');
-    grad.addColorStop(0.5, '#2d1b4e');
-    grad.addColorStop(1, '#0f0f23');
-    ctx.fillStyle = grad;
+    // Bright cyan sky - classic Karateka look
+    ctx.fillStyle = '#00ccff';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    // Mountains (parallax - slow)
-    var mountainOffset = -(cameraX * 0.2) % canvasWidth;
-    ctx.fillStyle = '#1e1e3a';
-    drawMountains(mountainOffset, 180, 120);
+    // Slight gradient at top for depth
+    var skyGrad = ctx.createLinearGradient(0, 0, 0, 200);
+    skyGrad.addColorStop(0, '#44ddff');
+    skyGrad.addColorStop(1, '#00bbee');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, canvasWidth, 200);
 
-    // Closer hills (parallax - medium)
-    var hillOffset = -(cameraX * 0.4) % canvasWidth;
-    ctx.fillStyle = '#16162e';
-    drawMountains(hillOffset, 220, 80);
+    // Mt. Fuji silhouette in the distance (parallax - very slow)
+    drawMtFuji(cameraX);
 
-    // Fortress wall (parallax - fast)
+    // Fortress walls on left side (parallax - medium)
     drawFortressWall(cameraX);
 
-    // Floor
+    // Horizontal fence/railing across middle
+    drawFence(cameraX);
+
+    // Floor - vivid red/magenta
     drawFloor(cameraX);
   }
 
-  function drawMountains(offset, baseY, height) {
+  function drawMtFuji(cameraX) {
+    var offset = -(cameraX * 0.1);
+    var fujiX = 500 + offset;
+
+    // Mountain base - distant blue-gray
+    ctx.fillStyle = '#6688aa';
     ctx.beginPath();
-    ctx.moveTo(0, canvasHeight);
-    for (var x = -200 + offset; x < canvasWidth + 200; x += 150) {
-      ctx.lineTo(x, baseY + Math.sin(x * 0.01) * 20);
-      ctx.lineTo(x + 75, baseY - height + Math.sin(x * 0.02) * 30);
-      ctx.lineTo(x + 150, baseY + Math.sin(x * 0.015) * 20);
-    }
-    ctx.lineTo(canvasWidth, canvasHeight);
+    ctx.moveTo(fujiX - 180, 220);
+    ctx.lineTo(fujiX, 80);
+    ctx.lineTo(fujiX + 180, 220);
+    ctx.closePath();
+    ctx.fill();
+
+    // Snow cap - white peak
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.moveTo(fujiX - 40, 130);
+    ctx.lineTo(fujiX, 80);
+    ctx.lineTo(fujiX + 40, 130);
+    // Jagged snow line
+    ctx.lineTo(fujiX + 30, 125);
+    ctx.lineTo(fujiX + 15, 135);
+    ctx.lineTo(fujiX, 128);
+    ctx.lineTo(fujiX - 15, 135);
+    ctx.lineTo(fujiX - 30, 125);
+    ctx.closePath();
+    ctx.fill();
+
+    // Secondary distant mountains
+    ctx.fillStyle = '#557799';
+    ctx.beginPath();
+    ctx.moveTo(fujiX - 350, 220);
+    ctx.lineTo(fujiX - 250, 150);
+    ctx.lineTo(fujiX - 150, 220);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(fujiX + 100, 220);
+    ctx.lineTo(fujiX + 250, 140);
+    ctx.lineTo(fujiX + 400, 220);
     ctx.closePath();
     ctx.fill();
   }
 
   function drawFortressWall(cameraX) {
-    var wallOffset = -(cameraX * 0.6) % 120;
-    ctx.fillStyle = '#2a2a4a';
-    ctx.fillRect(0, 250, canvasWidth, 20);
+    var wallOffset = -(cameraX * 0.5);
 
-    // Battlements
-    for (var x = wallOffset; x < canvasWidth; x += 60) {
-      ctx.fillStyle = '#2a2a4a';
-      ctx.fillRect(x, 235, 30, 35);
-      ctx.fillStyle = '#222240';
-      ctx.fillRect(x + 5, 240, 20, 15);
+    // Dark purple/indigo fortress wall on left side
+    ctx.fillStyle = '#1a0033';
+    ctx.fillRect(0, 180, 200 + wallOffset * 0.3, 160);
+
+    // Fortress tower/battlement
+    ctx.fillStyle = '#220044';
+    ctx.fillRect(0, 150, 80 + wallOffset * 0.2, 190);
+
+    // Angular stairs going up on fortress
+    ctx.fillStyle = '#2a0055';
+    var stairX = 80 + wallOffset * 0.2;
+    for (var i = 0; i < 6; i++) {
+      ctx.fillRect(stairX + i * 20, 200 + i * 20, 22, 140 - i * 20);
+    }
+
+    // Fortress wall top edge - crenellations
+    ctx.fillStyle = '#330066';
+    var crenX = wallOffset * 0.2;
+    for (var j = 0; j < 5; j++) {
+      ctx.fillRect(crenX + j * 35, 145, 20, 15);
+    }
+
+    // Dark window slits
+    ctx.fillStyle = '#000011';
+    ctx.fillRect(30 + wallOffset * 0.1, 180, 8, 20);
+    ctx.fillRect(55 + wallOffset * 0.1, 180, 8, 20);
+  }
+
+  function drawFence(cameraX) {
+    var fenceOffset = -(cameraX * 0.6) % 50;
+
+    // Horizontal railing bars
+    ctx.fillStyle = '#1a0033';
+    ctx.fillRect(0, 235, canvasWidth, 3);
+    ctx.fillRect(0, 255, canvasWidth, 3);
+
+    // Vertical fence posts
+    ctx.fillStyle = '#220044';
+    for (var x = fenceOffset; x < canvasWidth; x += 50) {
+      ctx.fillRect(x, 225, 4, 40);
+    }
+
+    // Top cap on posts
+    ctx.fillStyle = '#330055';
+    for (var x2 = fenceOffset; x2 < canvasWidth; x2 += 50) {
+      ctx.fillRect(x2 - 1, 222, 6, 5);
     }
   }
 
   function drawFloor(cameraX) {
-    // Main floor
-    ctx.fillStyle = '#3d2b1f';
+    // Vivid red/magenta floor - classic Karateka style
+    ctx.fillStyle = '#cc2255';
     ctx.fillRect(0, 340, canvasWidth, 60);
 
-    // Floor tiles
+    // Slightly darker red floor tiles for texture
     var tileOffset = -(cameraX % 40);
-    ctx.strokeStyle = '#2a1f15';
+    ctx.strokeStyle = '#aa1144';
     ctx.lineWidth = 1;
     for (var x = tileOffset; x < canvasWidth; x += 40) {
       ctx.beginPath();
@@ -80,9 +149,20 @@ var Renderer = (function() {
       ctx.stroke();
     }
 
-    // Floor top edge
-    ctx.fillStyle = '#4a3628';
-    ctx.fillRect(0, 338, canvasWidth, 4);
+    // Horizontal line in floor for depth
+    ctx.strokeStyle = '#aa1144';
+    ctx.beginPath();
+    ctx.moveTo(0, 365);
+    ctx.lineTo(canvasWidth, 365);
+    ctx.stroke();
+
+    // Floor top edge - brighter pink highlight
+    ctx.fillStyle = '#ee3377';
+    ctx.fillRect(0, 337, canvasWidth, 4);
+
+    // Dark line between scene and floor
+    ctx.fillStyle = '#110022';
+    ctx.fillRect(0, 335, canvasWidth, 3);
   }
 
   function drawCharacter(character, cameraX, isPlayer) {
@@ -98,10 +178,10 @@ var Renderer = (function() {
       ctx.scale(-1, 1);
     }
 
-    var bodyColor = isPlayer ? '#4488ff' : '#ff4444';
-    var skinColor = '#ffcc88';
-    var pantsColor = isPlayer ? '#2244aa' : '#aa2222';
-    var beltColor = '#222222';
+    var bodyColor = isPlayer ? '#f0f0f0' : '#cc2222';
+    var skinColor = '#e8b878';
+    var pantsColor = isPlayer ? '#e8e8e8' : '#881111';
+    var beltColor = isPlayer ? '#111111' : '#442222';
 
     switch (state) {
       case 'idle':
