@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karateka</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h1>Karateka</h1>
+  <canvas id="game-canvas" width="800" height="400"></canvas>
+  <div id="controls">
+    <span>Arrow Keys</span> Move | <span>Z</span> Punch | <span>X</span> Kick | <span>Up</span> Block | <span>Space</span> Start
+  </div>
+
+  <script src="js/input.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/enemy.js"></script>
+  <script src="js/combat.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      Game.init();
+    });
+  </script>
+</body>
+</html>
